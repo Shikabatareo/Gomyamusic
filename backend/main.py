@@ -1,5 +1,5 @@
 import fastapi
-from fastapi import UploadFile
+from fastapi import UploadFile, Form
 import sqlalchemy
 import os
 from datetime import datetime
@@ -9,6 +9,8 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, Text, Date
+from typing import Optional
+from fastapi.staticfiles import StaticFiles
 
 DATABASE_URL = 'postgresql://ShikaDb:@localhost/spotify_clone'
 engine = sqlalchemy.create_engine(DATABASE_URL)
@@ -16,10 +18,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base=declarative_base()
 
 app=fastapi.FastAPI(title='Spotify Clone API')
+app.mount("/uploads", StaticFiles(directory="uploads"))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['http://localhost:3000'],
+    allow_origins=['http://localhost:5173'],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*']
@@ -106,11 +109,24 @@ def get_tracks(skip: int=0, limit: int=100, db: Session = fastapi.Depends(get_db
     return tracks
 
 @app.post('/upload/')
-async def upload_track(file: UploadFile):
+async def upload_track(file: UploadFile, title: str = Form(''), artist_id: Optional[int] = None, album_id: Optional[int] = None, duration: int= None, db: Session = fastapi.Depends(get_db)):
     file_location = f'uploads/music/{file.filename}'
     with open(file_location, 'wb') as f:
         content = await file.read()
         f.write(content)
+    newTrack = Track(
+        title = title,
+        artist_id = artist_id,
+        album_id = album_id,
+        duration = duration,
+        file_url = file_location,
+        created_at =datetime.utcnow()
+    )
+
+    db.add(newTrack)
+    db.commit()
+
+
     return {'filename': file.filename, 'location': file_location}
 
 
