@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { use, useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import './App.css'
 
@@ -9,6 +9,8 @@ function App() {
   const [currentTrack, setCurrentTrack] = useState(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showUploadForm, setShowUploadForm] = useState(false)
+  const [duration, setDuration] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
   const [uploadData, setUploadData] = useState({
     title : '',
     artist_id: '',
@@ -46,7 +48,21 @@ function App() {
     }
     
 
+  const togglePlayPause = () => {
+    if(isPlaying) {
+        audioRef.pause()
+        setIsPlaying(false)
+    }
+    else {
+        audioRef.play()
+        setIsPlaying(true)
+    }
+  }
 
+  const handleSeek = (e) => {
+    audioRef.currentTime = e.target.value
+    setCurrentTime(audioRef.currentTime)
+  }
 
   const fetchTracks = async() => {
     try {
@@ -98,8 +114,31 @@ function App() {
     formData.append('title', uploadData.title)
     // formData.append('duration', uploadData.duration)
     const responce = await axios.post(`${API_BASE}/upload/`, formData)
+    fetchTracks()
   }
 
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds/60)
+    const secs = Math.floor(seconds % 60) 
+    return `${mins}:${secs}`
+  }
+
+  useEffect(()=> {
+    const updateProgress = () => {
+        setCurrentTime(audioRef.currentTime)
+        setDuration(audioRef.duration)
+    }
+    audioRef.addEventListener('timeupdate', updateProgress)
+    audioRef.addEventListener('loadedmetadata', () => setDuration(audioRef.duration))
+
+    return () => {
+        audioRef.removeEventListener('timeupdate', updateProgress)
+    }
+
+  }, [])
+
+
+  
   useEffect(()=> {
     fetchTracks()
   }, [])
@@ -128,6 +167,7 @@ function App() {
                 <div key={track.id} onClick={()=> playTrack(track)}>
                     <div>
                         <h4>{track.title}</h4>
+                        {currentTrack?.id === track.id && <span>{isPlaying ? '▶' : '⏸'}</span>}
                     </div>
                 </div>
             ))}
@@ -135,6 +175,24 @@ function App() {
             <button onClick={()=> setShowUploadForm(!showUploadForm)}>{showUploadForm ? 'Закрыть' : 'Загрузить трек'}</button>
     </div>
     </main>
+
+
+    {currentTrack && (
+        <footer>
+            <div>
+                <div>{currentTrack.title}</div>
+                <div>{formatTime(currentTime)} / {formatTime(duration)}</div>
+                <div></div>
+            </div>
+            <div>
+                <button onClick={togglePlayPause}> {isPlaying ? '⏸ Пауза' : '▶ Воспр.'}</button>
+                <input type='range' max={duration} value={currentTime} onChange={handleSeek}/>
+            </div>
+        </footer>
+    
+    )}
+
+
     {showUploadForm &&
     <form onSubmit={handleUploadSubmit}>
         <label>Аудио файл</label>
