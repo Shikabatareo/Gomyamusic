@@ -1,5 +1,8 @@
 import { use, useEffect, useRef, useState } from 'react'
 import axios from 'axios'
+import Background from './assets/Background.png'
+import BackgroundArtist from './assets/Michael.png'
+import BackgroundSvg from './assets/Vector.png'
 import './App.css'
 
 const API_BASE = 'http://localhost:8000'
@@ -92,7 +95,7 @@ function App() {
             console.log(fileName);
             setUploadData(prev=> ({
                 ...prev,
-                title: fileName
+                title: fileName,
             }))
             console.log(uploadData);
             
@@ -145,34 +148,56 @@ function App() {
 
 
   return (
-   <div>
-    <header>
+   <div className='app'>
+    <main className='left-container'>
+        <header>
         <h1>Gomyamusic</h1>
-    </header>
-    <main>
-        <nav>
-            <ul>
-                <li>Главная</li>
-                <li>Поиск</li>
-                <li>Моя медиатека</li>
-                <li>Создать плейлист</li>
+        <nav className='nav-menu'>
+            <ul className='ul-menu'>
+                <ol>Главная</ol>
+                <ol>Поиск</ol>
+                <ol>Моя медиатека</ol>
+                <ol>Создать плейлист</ol>
             </ul>
         </nav>
-
-
+    </header>
+    </main>
+    <main className='right-container'>
+    <div className='track-background'>
+        <img className='track-background-img' src={Background}></img>
+        <img className='track-background-artist' src={BackgroundArtist}></img>
+        <div className='track-background-info'>
+            <div className='track-background-info-logo'>
+                <img style={{width: '30px', height: '30px',marginRight: '15px'}} src={BackgroundSvg}></img>
+                <h2>Verified Artist</h2>
+            </div>
+            <h2>27.852.501 monthly listeners</h2>
+            <h1>Michael Jackson</h1>
+        </div>
+    </div>
     <div>
-        <h2>Треки</h2>
+        <div className='tracks-menu'>
+            <h2>Треки</h2>
+            <h2>Больше</h2>
+        </div>
+        <div className='tracks-info'>
+            <h3>#</h3>
+            <h3>Название</h3>
+            <h3>Длительность</h3>
+            <h3>Альбом</h3>
+        </div>
         <div>
             {tracks.map(track=> (
-                <div key={track.id} onClick={()=> playTrack(track)}>
-                    <div>
+                <div className='track' key={track.id} onClick={()=> playTrack(track)}>
+                        <h4>1</h4>
                         <h4>{track.title}</h4>
+                        <h4>10:10</h4>
+                        <h4>Thriller 25</h4>
                         {currentTrack?.id === track.id && <span>{isPlaying ? '▶' : '⏸'}</span>}
-                    </div>
                 </div>
             ))}
         </div>
-            <button onClick={()=> setShowUploadForm(!showUploadForm)}>{showUploadForm ? 'Закрыть' : 'Загрузить трек'}</button>
+            <button className='button-upload' onClick={()=> setShowUploadForm(!showUploadForm)}>{showUploadForm ? 'Закрыть' : 'Загрузить трек'}</button>
     </div>
     </main>
 

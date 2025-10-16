@@ -1,42 +1,103 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+.nav-menu {
+   font-size: 15px;
+   font-weight: 600 ;
+   margin-bottom: 100px;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.ul-menu {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 200px;
+    padding: 0;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+ol {
+    padding: 0;
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.app {
+    display: flex;
+    justify-content: space-between;
+    height: 950px;
+    padding: 20px;
+}
+.left-container {
+    width: 20%;
+    background-color: #0E0E0E;
+    border-radius: 30px 0 0 20px ;
+    display: flex;
+    justify-content: center;
+
+}
+.right-container {
+    width: 80%;
+    background: linear-gradient(to bottom,#6B0000,#0E0E0E);
+    border-radius: 0 30px 20px 0 ;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+body {
+    color: #F6F6F6;
+    font-family: 'Poppins',sans-serif;
+    background-repeat: no-repeat;
+    margin: 0 auto;
+    background-color: black;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.tracks-menu {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 100px;
+    padding-right: 100px;
+}
+.tracks-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+.tracks-info {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 100px;
+    padding-right: 100px;
 }
 
-.card {
-  padding: 2em;
+.track {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 100px;
+    padding-right: 100px;
+}
+.track-background {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
 }
 
-.read-the-docs {
-  color: #888;
+.track-background-img {
+    position: absolute;
+    width: 1140px;
+    height: auto;
+}
+.track-background-artist {
+    position: relative;
+    bottom: 11px;
+    right: -300px;
+}
+
+.track-background-info {
+    position: relative;
+    left: -550px;
+    top: 80px;
+}
+.track-background-info-logo {
+    display: flex;
+    align-items: center;
+}
+.button-upload {
+    border-radius: 20px;
+    padding: 10px;
+    background-color: #380404;
+    color: #F6F6F6;
+    position: absolute;
+    right: 100px;
 }
