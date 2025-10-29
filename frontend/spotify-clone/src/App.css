@@ -1,7 +1,20 @@
+html {
+    font-size: 16px;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .nav-menu {
    font-size: 15px;
-   font-weight: 600 ;
-   margin-bottom: 100px;
+   font-weight: 600;
+   padding: 40px;
+}
+
+.logo {
+    padding: 35px;
 }
 
 .ul-menu {
@@ -10,6 +23,8 @@
     flex-direction: column;
     height: 200px;
     padding: 0;
+    gap: 30px;
+    margin: auto;
 }
 ol {
     padding: 0;
@@ -32,6 +47,19 @@ ol {
     width: 80%;
     background: linear-gradient(to bottom,#6B0000,#0E0E0E);
     border-radius: 0 30px 20px 0 ;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin: auto;
+    max-width: 1200px;
+}
+
+.track-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 body {
@@ -57,8 +85,8 @@ body {
 .tracks-info {
     display: flex;
     justify-content: space-between;
-    padding-left: 100px;
-    padding-right: 100px;
+    width: 77%;
+    margin: auto;
 }
 
 .track {
@@ -67,37 +95,12 @@ body {
     padding-left: 100px;
     padding-right: 100px;
 }
-.track-background {
-    display: flex;
-    justify-content: center;
-    margin-top: 30px;
-}
 
-.track-background-img {
-    position: absolute;
-    width: 1140px;
-    height: auto;
-}
-.track-background-artist {
-    position: relative;
-    bottom: 11px;
-    right: -300px;
-}
-
-.track-background-info {
-    position: relative;
-    left: -550px;
-    top: 80px;
-}
-.track-background-info-logo {
-    display: flex;
-    align-items: center;
-}
 .button-upload {
     border-radius: 20px;
     padding: 10px;
     background-color: #380404;
     color: #F6F6F6;
-    position: absolute;
-    right: 100px;
+    margin-left: auto;
+    margin-right: 75px;
 }

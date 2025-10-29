@@ -1,8 +1,5 @@
 import { use, useEffect, useRef, useState } from 'react'
 import axios from 'axios'
-import Background from './assets/Background.png'
-import BackgroundArtist from './assets/Michael.png'
-import BackgroundSvg from './assets/Vector.png'
 import './App.css'
 
 const API_BASE = 'http://localhost:8000'
@@ -151,7 +148,7 @@ function App() {
    <div className='app'>
     <main className='left-container'>
         <header>
-        <h1>Gomyamusic</h1>
+        <h1 className='logo'>Gomyamusic</h1>
         <nav className='nav-menu'>
             <ul className='ul-menu'>
                 <ol>Главная</ol>
@@ -163,19 +160,7 @@ function App() {
     </header>
     </main>
     <main className='right-container'>
-    <div className='track-background'>
-        <img className='track-background-img' src={Background}></img>
-        <img className='track-background-artist' src={BackgroundArtist}></img>
-        <div className='track-background-info'>
-            <div className='track-background-info-logo'>
-                <img style={{width: '30px', height: '30px',marginRight: '15px'}} src={BackgroundSvg}></img>
-                <h2>Verified Artist</h2>
-            </div>
-            <h2>27.852.501 monthly listeners</h2>
-            <h1>Michael Jackson</h1>
-        </div>
-    </div>
-    <div>
+    <div className='container'>
         <div className='tracks-menu'>
             <h2>Треки</h2>
             <h2>Больше</h2>
@@ -186,7 +171,7 @@ function App() {
             <h3>Длительность</h3>
             <h3>Альбом</h3>
         </div>
-        <div>
+        <div className='track-container'>
             {tracks.map(track=> (
                 <div className='track' key={track.id} onClick={()=> playTrack(track)}>
                         <h4>1</h4>
