@@ -9,6 +9,8 @@ function useAudioPlayer() {
     const [currentTime, setCurrentTime] = useState(0)
 
     const audioRef = useRef(new Audio())
+    console.log(audioRef);
+    
 
     const playTrack = (track) => {
         if (currentTrack && currentTrack.id === track.id) {

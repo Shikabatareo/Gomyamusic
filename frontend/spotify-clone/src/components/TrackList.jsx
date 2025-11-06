@@ -1,13 +1,16 @@
+import { useFavorites } from "./context/FavoritesContext"
+
 const API_BASE = 'http://localhost:8000'
 
-function TrackList({ tracks, onTrackClick}) {
+function TrackList({ tracks, playTrack}) {
+    const {favorites, toggleFavorite} = useFavorites()
     return (
         <div className='track-container'>
             {tracks.map(track => (
                 <div 
                     className='track' 
                     key={track.id} 
-                    onClick={() => onTrackClick(track)}
+                    onClick={() => playTrack(track)}
                 >
                     <h4>1</h4>
                     <h4>{track.title}</h4>
@@ -19,6 +22,7 @@ function TrackList({ tracks, onTrackClick}) {
                             alt={track.title}
                         />
                     )}
+                    <button className="button-like" onClick={(e)=> {e.stopPropagation(); toggleFavorite(track.id)}}>{favorites.has(track.id) ? '❤️': '🖤'}</button>
                 </div>
             ))}
         </div>

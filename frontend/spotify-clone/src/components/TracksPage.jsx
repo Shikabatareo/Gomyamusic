@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import '../App.css'
 import useAudioPlayer from '../hooks/useAudioPlayer'
 import TrackList from './TrackList'
 import AudioPlayer from './AudioPlayer'
+import { useFavorites } from './context/FavoritesContext'
 
 const API_BASE = 'http://localhost:8000'
 
@@ -19,7 +19,6 @@ function TracksPage() {
         file: null,
         image: null
     })
-
     const audio = useAudioPlayer()
     const filteredTracks = tracks.filter(track => 
         track.title.toLowerCase().includes(search.toLowerCase())
@@ -118,15 +117,17 @@ function TracksPage() {
 
                 <TrackList 
                     tracks={filteredTracks}
-                    onTrackClick={audio.playTrack}
+                    playTrack={audio.playTrack}
+                    
                 />
-
+            <div>
                 <button 
                     className='button-upload' 
                     onClick={() => setShowUploadForm(!showUploadForm)}
                 >
                     {showUploadForm ? 'Закрыть' : 'Загрузить трек'}
                 </button>
+            </div>
 
                 {audio.currentTrack && (
                     <AudioPlayer {...audio} />

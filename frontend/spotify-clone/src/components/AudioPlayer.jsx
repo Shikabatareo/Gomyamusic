@@ -1,6 +1,6 @@
 const API_BASE = 'http://localhost:8000'
 
-function AudioPlayer({ currentTrack, isPlaying, togglePlayPause, currentTime, duration, onSeek, formatTime }) {
+function AudioPlayer({ currentTrack, isPlaying, togglePlayPause, currentTime, duration, handleSeek, formatTime }) {
     return (
         <footer className='footer'>
             <div className='footer-info'>
@@ -25,7 +25,7 @@ function AudioPlayer({ currentTrack, isPlaying, togglePlayPause, currentTime, du
                 type='range' 
                 max={duration || 0}
                 value={currentTime}
-                onChange={onSeek}
+                onChange={handleSeek}
             />
             <div>{formatTime(currentTime)} / {formatTime(duration)}</div>
         </footer>
