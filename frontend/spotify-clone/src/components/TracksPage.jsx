@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import useAudioPlayer from '../hooks/useAudioPlayer'
 import TrackList from './TrackList'
 import AudioPlayer from './AudioPlayer'
-import { useFavorites } from './context/FavoritesContext'
+
 
 const API_BASE = 'http://localhost:8000'
 
@@ -93,8 +94,12 @@ function TracksPage() {
                     />
                     <nav className='nav-menu'>
                         <ul className='ul-menu'>
-                            <ol>Главная</ol>
-                            <ol>Моя медиатека</ol>
+                            <ol>
+                                <Link to='/tracks'>Главная</Link>
+                            </ol>
+                            <ol>
+                                <Link to='/favorites'>Моя медиатека</Link>
+                            </ol>
                             <ol>Создать плейлист</ol>
                         </ul>
                     </nav>
@@ -112,6 +117,7 @@ function TracksPage() {
                         <h3>Длительность</h3>
                         <h3>Исполнитель</h3>
                         <h3>Обложка</h3>
+                        <h3>Нравится</h3>
                     </div>
                 </div>
 
@@ -120,7 +126,7 @@ function TracksPage() {
                     playTrack={audio.playTrack}
                     
                 />
-            <div>
+            <div className='div-button-upload'>
                 <button 
                     className='button-upload' 
                     onClick={() => setShowUploadForm(!showUploadForm)}

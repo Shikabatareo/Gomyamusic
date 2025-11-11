@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 import TrackList from "./TrackList"
 import { useFavorites } from "./context/FavoritesContext"
 import useAudioPlayer from "../hooks/useAudioPlayer"
@@ -49,13 +50,17 @@ function FavoritesPage() {
                     />
                     <nav className='nav-menu'>
                         <ul className='ul-menu'>
-                            <ol>Главная</ol>
-                            <ol>Моя медиатека</ol>
+                            <ol>
+                                <Link to='/tracks'>Главная</Link>
+                            </ol>
+                            <ol>
+                                <Link to='/favorites'>Моя медиатека</Link>
+                            </ol>
                             <ol>Создать плейлист</ol>
                         </ul>
                     </nav>
                 </header>
-            </main>
+            </main>как
             
             <main className='right-container'>
                 <div className='container'>
@@ -68,6 +73,7 @@ function FavoritesPage() {
                         <h3>Длительность</h3>
                         <h3>Исполнитель</h3>
                         <h3>Обложка</h3>
+                        <h3>Нравится</h3>
                     </div>
                 </div>
                 

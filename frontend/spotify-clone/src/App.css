@@ -77,6 +77,14 @@ html {
 }
 ol {
     padding: 0;
+    cursor: pointer;
+    a {
+        text-decoration: none;
+    }
+    a:visited {
+        color: inherit;
+        
+    }
 }
 
 .search {
@@ -96,7 +104,7 @@ ol {
 .app {
     display: flex;
     justify-content: space-between;
-    height: 950px;
+    height: 1400px;
     padding: 20px;
 }
 .left-container {
@@ -150,44 +158,61 @@ body {
 .tracks-info {
     display: flex;
     justify-content: space-between;
+    text-align: center;
 }
 .tracks-info h3 {
     margin: 0;
     flex-shrink: 0;
 }
 .tracks-info h3:nth-child(1) {
-    flex: 0 0 25%;
+    flex: 0 0 16%;
 }
 .tracks-info h3:nth-child(2) {
-    flex: 0 0 25%;
+    flex: 0 0 16%;
 }
 .tracks-info h3:nth-child(3) {
-    flex: 0 0 25%;
+    flex: 0 0 16%;
 }
 .tracks-info h3:nth-child(4) {
-    flex: 0 0 25%;
+    flex: 0 0 16%;
 }
+.tracks-info h3:nth-child(5) {
+    flex: 0 0 16%;
+}
+.tracks-info h3:nth-child(6) {
+    flex: 0 0 16%;
+}
+
 .track {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    text-align: center;
     padding: 35px;
+    
     img {
-        width:70px;
+        height: 100px;
+        object-fit: contain;
     }
 }
 
 .track h4:nth-child(1) {
-    flex: 0 0 25%;
+    flex: 0 0 16%;
 }
 .track h4:nth-child(2) {
-    flex: 0 0 25%;
+    flex: 0 0 16%;
 }
 .track h4:nth-child(3) {
-    flex: 0 0 25%;
+    flex: 0 0 16%;
 }
 .track h4:nth-child(4) {
-    flex: 0 0 25%;
+    flex: 0 0 16%;
+}
+.track img {
+    flex: 0 0 16%;
+}
+.track button {
+    flex: 0 0 16%;
 }
 
 .button-upload {
@@ -217,9 +242,15 @@ body {
 .button-like {
     background: none;
     border: none;
-    margin-left: 50px;
     padding: 10px;
     font-size: 30px;
     cursor: pointer;
     
+}
+
+.div-button-upload {
+    display: flex;
+    justify-content: right;
+    max-width: 1200px;
+    margin: auto;
 }

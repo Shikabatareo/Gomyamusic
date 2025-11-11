@@ -11,6 +11,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey, Text, Date
 from typing import Optional
 from fastapi.staticfiles import StaticFiles
+from mutagen import File
+from mutagen.mp3 import MP3
+from mutagen.flac import FLAC
 
 DATABASE_URL = 'postgresql://postgres:1337@localhost/spotify_clone'
 engine = sqlalchemy.create_engine(DATABASE_URL)
@@ -60,6 +63,7 @@ class Track(Base):
     artist_id = Column(Integer, ForeignKey('artists.id'))
     album_id = Column(Integer, ForeignKey("albums.id"))
     duration = Column(Integer)
+    artist = Column(String, index=True)
     file_url = Column(String)
     image_url = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -91,7 +95,6 @@ class ListeningHistory(Base):
 # def read_root():
 #     return {"message": "Spotify Clone API"}
 
-
 Base.metadata.create_all(bind=engine)
 
 def get_db():
@@ -102,6 +105,29 @@ def get_db():
         db.close()
 
 
+def get_audio_durartion(file_path):
+    try:
+        audio = File(file_path)
+        if audio is not None:
+            return int(audio.info.length)
+        return 100
+    except:
+        return 180
+
+def get_audio_artist(file_path):
+    try:
+        audio = File(file_path)
+        if audio is not None:
+            artist_tags = ['artist', 'ARTIST', 'TPE1', 'Author', 'author']
+            for tag in artist_tags:
+                if tag in audio.tags:
+                    artist_value = audio.tags[tag]
+                    if hasattr(artist_value, 'text'):
+                        artist = artist_value.text[0] if artist_value.text else 'Неизвестный исполнитель'
+                        return artist
+        return 'Неизвестный исполнитель'
+    except:
+        return 'Неизвестный исполнитель'
 
 
 @app.get('/tracks/')
@@ -119,19 +145,24 @@ async def upload_track(
     image: Optional[UploadFile] = None,
     db: Session = fastapi.Depends(get_db)
 ):
-    image_location = f'uploads/images/{image.filename}'
+    image_location = None
+    if image is not None:
+        image_location = f'uploads/images/{image.filename}'
+        with open(image_location, 'wb') as f:
+            content = await image.read()
+            f.write(content)
     file_location = f'uploads/music/{file.filename}'
     with open(file_location, 'wb') as f:
         content = await file.read()
         f.write(content)
-    with open(image_location, 'wb') as f:
-        content = await image.read()
-        f.write(content)
+    duration = get_audio_durartion(file_location)
+    artist = get_audio_artist(file_location)
     newTrack = Track(
         title = title,
         artist_id = artist_id,
         album_id = album_id,
         duration = duration,
+        artist = artist,
         file_url = file_location,
         image_url = image_location,
         created_at =datetime.utcnow()
