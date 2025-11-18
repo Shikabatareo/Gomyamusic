@@ -56,7 +56,9 @@ function FavoritesPage() {
                             <ol>
                                 <Link to='/favorites'>Моя медиатека</Link>
                             </ol>
-                            <ol>Создать плейлист</ol>
+                            <ol>
+                                <Link to='/playlists'>Мои плейлисты</Link>
+                            </ol>
                         </ul>
                     </nav>
                 </header>

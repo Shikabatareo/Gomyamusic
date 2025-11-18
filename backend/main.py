@@ -72,6 +72,8 @@ class Playlist(Base):
     __tablename__ = 'playlists'
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
+    description = Column(Text)
+    image_url = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -91,10 +93,11 @@ class ListeningHistory(Base):
     track_id = Column(Integer, ForeignKey('tracks.id'))
     listened_at = Column(DateTime, default=datetime.utcnow)
 
+
 # @app.get("/")
 # def read_root():
 #     return {"message": "Spotify Clone API"}
-
+Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 def get_db():
@@ -134,6 +137,57 @@ def get_audio_artist(file_path):
 def get_tracks(skip: int=0, limit: int=100, db: Session = fastapi.Depends(get_db)):
     tracks = db.query(Track).offset(skip).limit(limit).all()
     return tracks
+
+@app.get("/playlists/")
+def get_playlists(skip: int = 0, limit: int = 100, db: Session = fastapi.Depends(get_db)):
+    playlists = db.query(Playlist).offset(skip).limit(limit).all()
+    result = []
+    for playlist in playlists:
+        playlist_tracks = db.query(PlaylistTrack).filter(PlaylistTrack.playlist_id == playlist.id).all()
+        tracks = []
+        for pt in playlist_tracks:
+            track = db.query(Track).filter(Track.id==pt.track_id).first()
+            if track:
+                tracks.append({
+                    'id': track.id,
+                    'title': track.title,
+                    'artist': track.artist,
+                    'duration': track.duration,
+                    'file_url': track.file_url,
+                    'image_url': track.image_url
+                })
+        result.append({
+            "id": playlist.id,
+            "title": playlist.title,
+            "description": playlist.description,
+            "image_url": playlist.image_url,
+            "user_id": playlist.user_id,
+            "created_at": playlist.created_at,
+            "tracks": tracks
+        })
+    return result
+
+@app.post("/playlists/")
+def create_playlist(
+    title: str = Form(...),
+    description: str = Form(None),
+    image: UploadFile = None,
+    db: Session = fastapi.Depends(get_db)
+):
+    image_url = None
+    if image:
+        image_location = f'uploads/playlist_images/{image.filename}'
+        with open(image_location, 'wb') as f:
+            content = image.file.read()
+            f.write(content)
+        image_url = image_location
+    new_playlist = Playlist(title = title, description = description, image_url = image_url, created_at =datetime.utcnow())
+    db.add(new_playlist)
+    db.commit()
+
+
+
+
 
 @app.post('/upload/')
 async def upload_track(

@@ -233,6 +233,27 @@ body {
     padding: 35px;
 }
 
+.audio-form-playlists {
+    background-color: #0E0E0E;
+    border-radius: 30px 30px 30px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 35px;
+    max-width: 800px;
+    margin: auto;
+    
+    .audio-input  {
+        padding: 10px;
+        border-radius: 15px;
+    }
+    .audio-text  {
+        padding: 10px;
+        border-radius: 15px;
+    }
+    
+}
+
 
 .audio-input  {
   
@@ -253,4 +274,24 @@ body {
     justify-content: right;
     max-width: 1200px;
     margin: auto;
+}
+
+
+
+.playlist {
+    text-align: center;
+    font-size: 30px;
+    img {
+        height: 200px;
+        object-fit: contain;
+        margin-bottom: 30px;
+    }
+}
+.playlists-grid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 200px;
+
 }

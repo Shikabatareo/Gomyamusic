@@ -3,6 +3,7 @@ import TracksPage from './components/TracksPage'
 import FavoritesPage from './components/Favorites'
 import './App.css'
 import { FavoritesProvider } from './components/context/FavoritesContext'
+import PlaylistsPage from './components/PlaylistsPage'
 
 function App() {
 
@@ -13,6 +14,7 @@ function App() {
               <Route path="/" element={<TracksPage />} />
               <Route path="/tracks" element={<TracksPage />} />
               <Route path="/favorites" element={<FavoritesPage />} />
+              <Route path="/playlists" element={<PlaylistsPage />} />
             </Routes>
       </Router>
     </FavoritesProvider>
