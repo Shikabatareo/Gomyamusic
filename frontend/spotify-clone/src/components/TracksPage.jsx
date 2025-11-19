@@ -76,6 +76,17 @@ function TracksPage() {
         }
     }
 
+
+    const removeTrack = async (trackId) => {
+        try {
+            await axios.delete(`${API_BASE}/tracks/${trackId}`)
+            fetchTracks()
+        }
+        catch (error) {
+            console.log('Ошибка добавления трека', error)
+        }
+    }
+
     useEffect(() => {
         fetchTracks()
     }, [])
@@ -126,7 +137,8 @@ function TracksPage() {
                 <TrackList 
                     tracks={filteredTracks}
                     playTrack={audio.playTrack}
-                    
+                    showRemoveButton={true}
+                    onRemoveTrack={removeTrack}
                 />
             <div className='div-button-upload'>
                 <button 

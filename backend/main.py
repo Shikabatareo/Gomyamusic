@@ -97,7 +97,7 @@ class ListeningHistory(Base):
 # @app.get("/")
 # def read_root():
 #     return {"message": "Spotify Clone API"}
-Base.metadata.drop_all(bind=engine)
+# Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 def get_db():
@@ -167,6 +167,51 @@ def get_playlists(skip: int = 0, limit: int = 100, db: Session = fastapi.Depends
         })
     return result
 
+
+@app.get("/playlists/{playlist_id}")
+def get_playlist(playlist_id: int, db: Session = fastapi.Depends(get_db)):
+    playlist = db.query(Playlist).filter(Playlist.id==playlist_id).first()
+    playlist_tracks = db.query(PlaylistTrack).filter(PlaylistTrack.playlist_id == playlist_id).all()
+    tracks = []
+    for pt in playlist_tracks:
+        track = db.query(Track).filter(Track.id==pt.track_id).first()
+        if track:
+            tracks.append({
+                'id': track.id,
+                'title': track.title,
+                'artist': track.artist,
+                'duration': track.duration,
+                'file_url': track.file_url,
+                'image_url': track.image_url
+            })
+    return {
+        "id": playlist.id,
+        "title": playlist.title,
+        "description": playlist.description,
+        "image_url": playlist.image_url,
+        "user_id": playlist.user_id,
+        "created_at": playlist.created_at,
+        "tracks": tracks
+    }
+
+
+@app.post('/playlists/{playlist_id}/tracks/')
+def add_track_to_playlist(playlist_id: int, track_id: int = fastapi.Query(...), db: Session = fastapi.Depends(get_db)):
+    playlist = db.query(Playlist).filter(Playlist.id==playlist_id).first()
+    print(playlist)
+    track = db.query(Track).filter(Track.id==track_id).first()
+    if not track:
+        raise fastapi.HTTPException(status_code=404, detail="Track not found")
+    
+    existing = db.query(PlaylistTrack).filter(PlaylistTrack.playlist_id == playlist_id, PlaylistTrack.track_id == track_id).first()
+    if existing:
+        raise fastapi.HTTPException(status_code=400, detail='Трек уже добавлен')
+    
+    playlist_track = PlaylistTrack(playlist_id = playlist_id, track_id = track_id)
+    db.add(playlist_track)
+    db.commit()
+
+
 @app.post("/playlists/")
 def create_playlist(
     title: str = Form(...),
@@ -228,6 +273,23 @@ async def upload_track(
 
     return {'filename': file.filename, 'location': file_location, 'location-image': image_location}
 
+@app.delete('/playlists/{playlist_id}/tracks/{track_id}')
+def remove_track_from_playlist(playlist_id: int, track_id: int, db: Session = fastapi.Depends(get_db)):
+    playlist_track = db.query(PlaylistTrack).filter(PlaylistTrack.playlist_id == playlist_id, PlaylistTrack.track_id == track_id).first()
+    if not playlist_track:
+        raise fastapi.HTTPException(status_code=404, detail="Трект не найден в плейлисте")
+    db.delete(playlist_track)
+    db.commit()
+
+@app.delete('/tracks/{track_id}')
+def remove_track(track_id: int, db: Session = fastapi.Depends(get_db)):
+    track = db.query(Track).filter(Track.id == track_id).first()
+    if not track:
+        raise fastapi.HTTPException(status_code=404, detail="Трект не найден")
+    db.query(PlaylistTrack).filter(PlaylistTrack.track_id == track_id).delete()
+    db.query(ListeningHistory).filter(ListeningHistory.track_id==track_id).delete()
+    db.delete(track)
+    db.commit()
 
 
 if __name__ == '__main__':

@@ -108,6 +108,7 @@ useEffect(()=> {
     <div className="playlists-grid">
                     {playlists.map(playlist => (
                         <div key={playlist.id} className="playlist">
+                            <Link to={`/playlist/${playlist.id}`}>
                             {playlist.image_url ? (
                                 <img src={`${API_BASE}/${playlist.image_url}`} alt={playlist.title}/>
                             ): (
@@ -116,6 +117,7 @@ useEffect(()=> {
                             <h3>{playlist.title}</h3>
                             <p>{playlist.description}</p>
                             {/* <span>{playlist.tracks} треков</span> */}
+                           </Link>
                         </div>
                     ))}
                     </div>

@@ -2,7 +2,7 @@ import { useFavorites } from "./context/FavoritesContext"
 
 const API_BASE = 'http://localhost:8000'
 
-function TrackList({ tracks, playTrack}) {
+function TrackList({ tracks, playTrack, showLikeButton = true, showRemoveButton = false, onRemoveTrack}) {
     const {favorites, toggleFavorite} = useFavorites()
 
 
@@ -30,7 +30,21 @@ function TrackList({ tracks, playTrack}) {
                             alt={track.title}
                         />
                     )}
+                    {showLikeButton && ( 
                     <button className="button-like" onClick={(e)=> {e.stopPropagation(); toggleFavorite(track.id)}}>{favorites.has(track.id) ? '❤️': '🖤'}</button>
+                        )
+                    }
+                    {showRemoveButton && (
+                        <button 
+                                className="button-like"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onRemoveTrack(track.id);
+                                }}
+                            >
+                                ❌
+                            </button>
+                    )}
                 </div>
             ))}
         </div>

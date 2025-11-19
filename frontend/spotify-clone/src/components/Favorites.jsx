@@ -62,7 +62,7 @@ function FavoritesPage() {
                         </ul>
                     </nav>
                 </header>
-            </main>как
+            </main>
             
             <main className='right-container'>
                 <div className='container'>
