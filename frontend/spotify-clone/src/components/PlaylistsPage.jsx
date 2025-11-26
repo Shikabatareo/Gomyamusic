@@ -4,6 +4,8 @@ import axios from 'axios'
 import TrackList from "./TrackList"
 import AudioPlayer from "./AudioPlayer"
 import useAudioPlayer from "../hooks/useAudioPlayer"
+import { useUser } from "./context/UserContext"
+
 
 
 
@@ -12,6 +14,7 @@ const API_BASE = 'http://localhost:8000'
 
 
 function PlaylistsPage() {
+    const { currentUser } = useUser();
     const [playlists, setPlaylists] = useState([])
     const [showCreateForm, setShowCreateForm] = useState(false)
 
@@ -25,7 +28,7 @@ function PlaylistsPage() {
 
     const fetchPlaylists = async () => {
         try {
-            const response = await axios.get(`${API_BASE}/playlists/`)
+            const response = await axios.get(`${API_BASE}/${currentUser}/playlists/`)
             setPlaylists(response.data)
         } catch (e) {
             console.log('Ошибка загрузки плейлистов', e)
@@ -34,6 +37,12 @@ function PlaylistsPage() {
 
     const handleCreatePlaylist = async (e) => {
         e.preventDefault()
+
+        if (!currentUser) {
+            alert('Пожалуйста, выберите пользователя');
+            return;
+        }
+        
         const formData = new FormData()
         formData.append('title', newPlaylist.title)
 
@@ -42,7 +51,7 @@ function PlaylistsPage() {
             formData.append('description', newPlaylist.description)
         }
         try {
-            await axios.post(`${API_BASE}/playlists/`, formData, {
+            await axios.post(`${API_BASE}/${currentUser}/playlists/`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
@@ -58,7 +67,7 @@ function PlaylistsPage() {
     }
 useEffect(()=> {
     fetchPlaylists()
-}, [])
+}, [currentUser])
 
  return (
         <div className='app'>

@@ -4,6 +4,7 @@ import axios, { all } from 'axios'
 import useAudioPlayer from "../hooks/useAudioPlayer"
 import TrackList from "./TrackList"
 import AudioPlayer from "./AudioPlayer"
+import { useUser } from "./context/UserContext"
 
 const API_BASE = 'http://localhost:8000'
 
@@ -14,6 +15,7 @@ function PlaylistDetail() {
     const [playlist, setPlaylist] = useState(null)
     const [allTracks, setAllTracks] = useState([])
     const [showAddTrack, setShowAddTrack] = useState(false)
+    const {currentUser} = useUser()
     const audio = useAudioPlayer()
 
     const fetchPlaylist = async () => {
@@ -29,7 +31,7 @@ function PlaylistDetail() {
 
     const fetchAllTracks = async () => {
         try {
-        const response = await axios.get(`${API_BASE}/tracks/`)
+        const response = await axios.get(`${API_BASE}/${currentUser}/tracks/`)
         setAllTracks(response.data)
         }
         catch (e) {

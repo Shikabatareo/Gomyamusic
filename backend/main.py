@@ -66,6 +66,7 @@ class Track(Base):
     artist = Column(String, index=True)
     file_url = Column(String)
     image_url = Column(String)
+    user_id = Column(Integer, ForeignKey('users.id'))
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class Playlist(Base):
@@ -97,7 +98,7 @@ class ListeningHistory(Base):
 # @app.get("/")
 # def read_root():
 #     return {"message": "Spotify Clone API"}
-# Base.metadata.drop_all(bind=engine)
+Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
 
 def get_db():
@@ -132,15 +133,30 @@ def get_audio_artist(file_path):
     except:
         return 'Неизвестный исполнитель'
 
+def get_or_create_user(user_id: int, db: Session):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        user = User(
+            id=user_id,
+            username=f"User_{user_id}",
+            email=f"User_{user_id}@example.com",
+            password_hash="default",
+            created_at=datetime.utcnow()
+        )
+        db.add(user)
+        db.commit()
+    return user
 
-@app.get('/tracks/')
-def get_tracks(skip: int=0, limit: int=100, db: Session = fastapi.Depends(get_db)):
-    tracks = db.query(Track).offset(skip).limit(limit).all()
+@app.get('/{user_id}/tracks')
+def get_tracks(user_id:int, skip: int=0, limit: int=100, db: Session = fastapi.Depends(get_db)):
+    get_or_create_user(user_id, db)
+    tracks = db.query(Track).filter(Track.user_id == user_id).offset(skip).limit(limit).all()
     return tracks
 
-@app.get("/playlists/")
-def get_playlists(skip: int = 0, limit: int = 100, db: Session = fastapi.Depends(get_db)):
-    playlists = db.query(Playlist).offset(skip).limit(limit).all()
+@app.get("/{user_id}/playlists/")
+def get_playlists(user_id :int,skip: int = 0, limit: int = 100, db: Session = fastapi.Depends(get_db)):
+    get_or_create_user(user_id, db)
+    playlists = db.query(Playlist).filter(Playlist.user_id == user_id).offset(skip).limit(limit).all()
     result = []
     for playlist in playlists:
         playlist_tracks = db.query(PlaylistTrack).filter(PlaylistTrack.playlist_id == playlist.id).all()
@@ -195,6 +211,11 @@ def get_playlist(playlist_id: int, db: Session = fastapi.Depends(get_db)):
     }
 
 
+
+@app.post("/users/{user_id}")
+def create_user(user_id: int, db: Session = fastapi.Depends(get_db)):
+    get_or_create_user(user_id, db)
+
 @app.post('/playlists/{playlist_id}/tracks/')
 def add_track_to_playlist(playlist_id: int, track_id: int = fastapi.Query(...), db: Session = fastapi.Depends(get_db)):
     playlist = db.query(Playlist).filter(Playlist.id==playlist_id).first()
@@ -212,13 +233,15 @@ def add_track_to_playlist(playlist_id: int, track_id: int = fastapi.Query(...), 
     db.commit()
 
 
-@app.post("/playlists/")
+@app.post("/{user_id}/playlists/")
 def create_playlist(
+    user_id: int,
     title: str = Form(...),
     description: str = Form(None),
     image: UploadFile = None,
     db: Session = fastapi.Depends(get_db)
 ):
+    get_or_create_user(user_id, db)
     image_url = None
     if image:
         image_location = f'uploads/playlist_images/{image.filename}'
@@ -226,7 +249,7 @@ def create_playlist(
             content = image.file.read()
             f.write(content)
         image_url = image_location
-    new_playlist = Playlist(title = title, description = description, image_url = image_url, created_at =datetime.utcnow())
+    new_playlist = Playlist(title = title, description = description, image_url = image_url, user_id = user_id, created_at =datetime.utcnow())
     db.add(new_playlist)
     db.commit()
 
@@ -234,8 +257,9 @@ def create_playlist(
 
 
 
-@app.post('/upload/')
+@app.post('/{user_id}/upload/')
 async def upload_track(
+    user_id: int,
     file: UploadFile, 
     title: str = Form(''), 
     artist_id: Optional[int] = None, 
@@ -244,6 +268,7 @@ async def upload_track(
     image: Optional[UploadFile] = None,
     db: Session = fastapi.Depends(get_db)
 ):
+    user = get_or_create_user(user_id, db)
     image_location = None
     if image is not None:
         image_location = f'uploads/images/{image.filename}'
@@ -264,6 +289,7 @@ async def upload_track(
         artist = artist,
         file_url = file_location,
         image_url = image_location,
+        user_id = user_id,
         created_at =datetime.utcnow()
     )
 

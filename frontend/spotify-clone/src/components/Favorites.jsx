@@ -5,12 +5,14 @@ import { useFavorites } from "./context/FavoritesContext"
 import useAudioPlayer from "../hooks/useAudioPlayer"
 import axios from 'axios'
 import AudioPlayer from "./AudioPlayer"
+import { useUser } from "./context/UserContext"
 
 const API_BASE = 'http://localhost:8000'
 
 function FavoritesPage() {
     const [tracks, setTracks] = useState([])
     const [search, setSearch] = useState('')
+    const { currentUser } = useUser()
 
     const audio = useAudioPlayer()
     const { favorites } = useFavorites()
@@ -24,7 +26,7 @@ function FavoritesPage() {
 
     const fetchTracks = async () => {
         try {
-            const response = await axios.get(`${API_BASE}/tracks/`)
+            const response = await axios.get(`${API_BASE}/${currentUser}/tracks`)
             setTracks(response.data)
         } catch (e) {
             console.log('Ошибка загрузки треков ', e)
@@ -34,7 +36,7 @@ function FavoritesPage() {
 
     useEffect(() => {
         fetchTracks()
-    }, [])
+    }, [currentUser])
 
     return (
         <div className='app'>

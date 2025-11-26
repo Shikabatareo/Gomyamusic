@@ -4,11 +4,13 @@ import axios from 'axios'
 import useAudioPlayer from '../hooks/useAudioPlayer'
 import TrackList from './TrackList'
 import AudioPlayer from './AudioPlayer'
+import { useUser } from './context/UserContext'
 
 
 const API_BASE = 'http://localhost:8000'
 
 function TracksPage() {
+    const {currentUser} = useUser()
     const [tracks, setTracks] = useState([])
     const [showUploadForm, setShowUploadForm] = useState(false)
     const [search, setSearch] = useState('')
@@ -27,7 +29,7 @@ function TracksPage() {
 
     const fetchTracks = async() => {
         try {
-            const response = await axios.get(`${API_BASE}/tracks/`)
+            const response = await axios.get(`${API_BASE}/${currentUser}/tracks/`)
             setTracks(response.data)
         } catch (e) {
             console.log('Ошибка загрузки треков ', e)
@@ -59,6 +61,10 @@ function TracksPage() {
     const handleUploadSubmit = async (e) => {
         e.preventDefault()
 
+        if (!currentUser) {
+            return;
+        }
+
         const formData = new FormData()
         formData.append('file', uploadData.file)
         formData.append('title', uploadData.title)
@@ -68,7 +74,7 @@ function TracksPage() {
         }
 
         try {
-            await axios.post(`${API_BASE}/upload/`, formData)
+            await axios.post(`${API_BASE}/${currentUser}/upload/`, formData)
             fetchTracks()
             setShowUploadForm(false)
         } catch (error) {
@@ -88,8 +94,16 @@ function TracksPage() {
     }
 
     useEffect(() => {
-        fetchTracks()
-    }, [])
+        if (currentUser) {
+            axios.post(`${API_BASE}/users/${currentUser}`)
+            .then(() => {
+                fetchTracks();
+            })
+            .catch(error => {
+                console.log('Ошибка создания пользователя в базе:', error);
+            });
+        }
+    }, [currentUser])
 
     return (
         <div className='app'>
