@@ -139,12 +139,13 @@ function TracksPage() {
                         <h2>Треки</h2>
                     </div>
                     <div className='tracks-info'>
-                        <h3>#</h3>
+                        <h3>№</h3>
                         <h3>Название</h3>
                         <h3>Длительность</h3>
                         <h3>Исполнитель</h3>
                         <h3>Обложка</h3>
                         <h3>Нравится</h3>
+                        <h3>Удалить</h3>
                     </div>
                 </div>
 
@@ -186,6 +187,7 @@ function TracksPage() {
                         name='image' 
                         accept='image/*' 
                         onChange={handleUploadChange} 
+                        required
                     />
                     <input 
                         className='audio-text' 
@@ -193,6 +195,7 @@ function TracksPage() {
                         name='title' 
                         value={uploadData.title} 
                         onChange={handleUploadChange} 
+                        required
                     />
                     <button className='button-upload' type='submit'>
                         Загрузить трек

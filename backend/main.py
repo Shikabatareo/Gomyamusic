@@ -36,32 +36,12 @@ class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
     username= Column(String, unique=True, index=True)
-    email = Column(String,unique=True, index=True)
-    password_hash = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-class Artist(Base):
-    __tablename__ = 'artists'
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    bio = Column(Text)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-class Album(Base):
-    __tablename__ = 'albums'
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
-    artist_id = Column(Integer, ForeignKey('artists.id'))
-    release_date = Column(Date)
-    cover_art_url = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class Track(Base):
     __tablename__ = 'tracks'
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
-    artist_id = Column(Integer, ForeignKey('artists.id'))
-    album_id = Column(Integer, ForeignKey("albums.id"))
     duration = Column(Integer)
     artist = Column(String, index=True)
     file_url = Column(String)
@@ -83,23 +63,27 @@ class PlaylistTrack(Base):
     id = Column(Integer, primary_key=True, index=True)
     playlist_id = Column(Integer, ForeignKey('playlists.id'))
     track_id = Column(Integer, ForeignKey('tracks.id'))
-    position = Column(Integer)
     added_at = Column(DateTime, default=datetime.utcnow)
 
 
-class ListeningHistory(Base):
-    __tablename__ = 'listening_history'
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    track_id = Column(Integer, ForeignKey('tracks.id'))
-    listened_at = Column(DateTime, default=datetime.utcnow)
 
 
-# @app.get("/")
-# def read_root():
-#     return {"message": "Spotify Clone API"}
-Base.metadata.drop_all(bind=engine)
-Base.metadata.create_all(bind=engine)
+# def reset_database():
+#     with engine.connect() as conn:
+    
+#         conn.execute(sqlalchemy.text("DROP TABLE IF EXISTS listening_history CASCADE"))
+#         conn.execute(sqlalchemy.text("DROP TABLE IF EXISTS artists CASCADE"))
+#         conn.execute(sqlalchemy.text("DROP TABLE IF EXISTS albums CASCADE"))
+#         conn.execute(sqlalchemy.text("DROP TABLE IF EXISTS playlists_tracks CASCADE"))
+#         conn.execute(sqlalchemy.text("DROP TABLE IF EXISTS playlists CASCADE"))
+#         conn.execute(sqlalchemy.text("DROP TABLE IF EXISTS tracks CASCADE"))
+#         conn.execute(sqlalchemy.text("DROP TABLE IF EXISTS users CASCADE"))
+#         conn.commit()
+      
+#     Base.metadata.create_all(bind=engine)
+#     
+
+# reset_database()
 
 def get_db():
     db = SessionLocal()
@@ -139,8 +123,6 @@ def get_or_create_user(user_id: int, db: Session):
         user = User(
             id=user_id,
             username=f"User_{user_id}",
-            email=f"User_{user_id}@example.com",
-            password_hash="default",
             created_at=datetime.utcnow()
         )
         db.add(user)
@@ -262,8 +244,6 @@ async def upload_track(
     user_id: int,
     file: UploadFile, 
     title: str = Form(''), 
-    artist_id: Optional[int] = None, 
-    album_id: Optional[int] = None, 
     duration: int = None, 
     image: Optional[UploadFile] = None,
     db: Session = fastapi.Depends(get_db)
@@ -283,8 +263,6 @@ async def upload_track(
     artist = get_audio_artist(file_location)
     newTrack = Track(
         title = title,
-        artist_id = artist_id,
-        album_id = album_id,
         duration = duration,
         artist = artist,
         file_url = file_location,
@@ -313,7 +291,6 @@ def remove_track(track_id: int, db: Session = fastapi.Depends(get_db)):
     if not track:
         raise fastapi.HTTPException(status_code=404, detail="Трект не найден")
     db.query(PlaylistTrack).filter(PlaylistTrack.track_id == track_id).delete()
-    db.query(ListeningHistory).filter(ListeningHistory.track_id==track_id).delete()
     db.delete(track)
     db.commit()
 

@@ -72,7 +72,7 @@ function FavoritesPage() {
                         <h2>Моя медиатека</h2>
                     </div>
                     <div className='tracks-info'>
-                        <h3>#</h3>
+                        <h3>№</h3>
                         <h3>Название</h3>
                         <h3>Длительность</h3>
                         <h3>Исполнитель</h3>
